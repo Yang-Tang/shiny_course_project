@@ -1,11 +1,11 @@
 library(shiny)
-n = 6
-nums <- sample(rep(c(1:(n/2)), times=2), n, F)
+n <- 6
+# nums <- sample(rep(c(1:(n/2)), times=2), n, F)
 guessed <- show <- rep(F, times=n)
-lst <- as.list(c(1:n))
-names(lst) <- rep('X', times=n)
-num1 <- num2 <- -1
-idx <- 1
+# lst <- as.list(c(1:n))
+# names(lst) <- rep('X', times=n)
+#num1 <- num2 <- -1
+#idx <- 1
 
 shinyServer(function(input, output, session){
     observe({
@@ -21,18 +21,11 @@ shinyServer(function(input, output, session){
     })
     
     observe({
-        #input$dif
         if(length(input$numbers) == 1){
             idx <<- c(as.numeric(input$numbers[1]))
             num1 <<- nums[idx[1]]
             show[idx[1]] <<- T
             names(lst)[idx[1]] <<- as.character(num1)
-            #                 isolate({
-            #                     updateCheckboxGroupInput(session, 'numbers', 
-            #                                             choices = lst, 
-            #                                             selected=as.character(idx[1])
-            #                     )
-            #                 })
         } else if(length(input$numbers) == 2){
             for(sel in input$numbers){
                 if (!(as.numeric(sel) %in% idx)) {
@@ -45,7 +38,6 @@ shinyServer(function(input, output, session){
             if (num1 == num2) {
                 guessed[idx[1]] <<- guessed[idx[2]] <<- T
             }
-            #                 isolate({updateCheckboxGroupInput(session, 'numbers', choices = lst)})
         } else if(length(input$numbers) == 3){
             for(sel in input$numbers){
                 if (!(as.numeric(sel) %in% idx)) {
@@ -62,11 +54,8 @@ shinyServer(function(input, output, session){
                     names(lst)[i] <<- 'X'
                 }
             }
-            #                 isolate({updateCheckboxGroupInput(session, 'numbers', choices = lst, selected=as.character(idx[3]))})
         } else if(length(input$numbers) == 0){
-#             if(!guessed[idx[1]]){
-#                 names(lst)[idx[1]] <<- 'X'
-#             }
+
             for(i in c(1:n)){
                 if(!guessed[i]){
                     names(lst)[i] <<- 'X'
@@ -84,25 +73,5 @@ shinyServer(function(input, output, session){
         if(!(F %in% guessed)){
             output$msg <- renderText({'Good job! Once more?'})
         }
-        #             print(input$numbers)
-        #             print (idx)
-        #             print (show)
-        #             print (guessed)
-        #         if(length(input$numbers) >= 3){
-        #             isolate({updateCheckboxGroupInput(session, 'numbers', choices = lst, selected=NULL)})
-        #         } 
-        #             sapply(c(1:n), function(x){
-        #                 if(show[x]){
-        #                     return(as.character(nums[x]))
-        #                 } else {
-        #                     return('X')
-        #                 }
-        #             })
     })
-    
-    #         output$msg <- renderText({
-    #             name()
-    #             #name()
-    #         })
 })
-
