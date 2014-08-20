@@ -1,15 +1,12 @@
 library(shiny)
 library(ggplot2)
-# n <- 6
-# nums <- sample(rep(c(1:(n/2)), times=2), n, F)
-# guessed <- show <- rep(F, times=n)
-# lst <- as.list(c(1:n))
-# names(lst) <- rep('X', times=n)
-# num1 <- num2 <- -1
-# idx <- 1
-# guessed <- c(F,F,F,F,F,T)
-# selected <- c()
-guessed <- c(F)
+n <- 6
+nums <- sample(rep(c(1:(n/2)), times=2), n, F)
+guessed <- rep(F, times=n)
+lst <- as.list(c(1:n))
+names(lst) <- rep('X', times=n)
+num1 <- num2 <- -1
+selected <- c()
 game_finished <- F
 data <- readRDS('data/data.rds')
 
@@ -96,4 +93,3 @@ shinyServer(function(input, output, session){
         
     })
 })
-
