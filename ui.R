@@ -5,22 +5,40 @@ shinyUI(fluidPage(
     
     sidebarLayout(
         sidebarPanel(
-            sliderInput('dif',
-                        label = h3('Difficulty'),
-                        min = 2,
-                        max = 9,
-                        value = 3
+            conditionalPanel(
+                'input.tab === "Game"',
+                sliderInput('dif',
+                            label = h3('Difficulty'),
+                            min = 2,
+                            max = 9,
+                            value = 3
+                ),
+                
+                actionButton("init", "Start!")
             ),
-            
-            actionButton("init", "Start!")
+            conditionalPanel(
+                'input.tab === "Table"',
+                'Table'
+            ),
+            conditionalPanel(
+                'input.tab === "Plot"',
+                'Plot'
+            )
         ),
+        
         mainPanel(
-            checkboxGroupInput('numbers',
-                               label = h3('Numbers'),
-                               choices = ''
-            ),
-            h3(textOutput('msg')),
-            uiOutput('numbers')
+            tabsetPanel(
+                id = 'tab',
+                tabPanel('Game', 
+                         h3(textOutput('turns')),
+                         h3(textOutput('msg')),
+                         uiOutput('numbers')),
+                tabPanel('Table', 
+                         dataTableOutput('table')),
+                tabPanel('Plot', 
+                         plotOutput('plot'))
+            )
+            
         )
     )
 ))
