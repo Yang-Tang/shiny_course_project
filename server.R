@@ -9,7 +9,8 @@ library(ggplot2)
 # idx <- 1
 # guessed <- c(F,F,F,F,F,T)
 # selected <- c()
-guessed <- c()
+guessed <- c(F)
+game_finished <- F
 data <- readRDS('data/data.rds')
 
 shinyServer(function(input, output, session){
@@ -37,7 +38,9 @@ shinyServer(function(input, output, session){
                 names(lst)[as.numeric(selected)] <<- 'X'
                 guessed[as.numeric(selected)] <<- F
             }
-            turns <<- turns + 1
+            if(!game_finished){
+                turns <<- turns + 1
+            }
             for(idx in input$numbers){
                 if(!(idx %in% selected)){
                     sel <<- as.numeric(idx)
@@ -52,24 +55,29 @@ shinyServer(function(input, output, session){
                 selected <<- c()
             }
         }
-        if(!(F %in% guessed)){
-#             newrecord <<- c(Sys.Date(),n/2,turns)
+        if(!(F %in% guessed) & !game_finished){
             newrecord <<- data.frame('Date'=Sys.Date(),
-                             'Diff'=n/2, 
-                             'Turn'=turns, 
+                             'Difficulty'=n/2, 
+                             'Turns_used'=turns, 
                              stringsAsFactors=FALSE)
             data <<- rbind(data, newrecord)
             print(data)
             saveRDS(data, 'data/data.rds')
-            output$msg <- renderText({'Good job! Once more?'})
+            game_finished <<- T
+            output$msg <- renderText({'Good job! Click the Restart button to play once more.'})
             output$table <- renderDataTable({data})
-            output$plot <- renderPlot({qplot(Diff, Turn, data=data)})
+            output$plot <- renderPlot({
+                ggplot(data, aes(x=Difficulty, y=Turns_used, colour=Difficulty)) +
+                    geom_point(size=5, 
+                               alpha=0.5,
+                               position="jitter")
+            })
         }
         output$turns <- renderText({
-            paste('Turns: ', as.character(turns))
+            paste('Turns of guessed used: ', as.character(turns))
         })
         checkboxGroupInput('numbers',
-                           label = 'num2',
+                           label = 'Match digits by click two of "X" below',
                            choices = lst,
                            selected = selected)
     })
@@ -78,69 +86,14 @@ shinyServer(function(input, output, session){
         turns <<- 0
         n <<- 2* as.numeric(input$dif)
         nums <<- sample(rep(c(1:(n/2)), times=2), n, F)
-#         guessed <<- show <<- rep(F, times=n)
         guessed <<- rep(F, times=n)
         selected <<- c()
         lst <<- as.list(c(1:n))
         names(lst) <<- rep('X', times=n)
         isolate({updateCheckboxGroupInput(session, 'numbers', choices = lst, selected=NULL)})
         output$msg <- renderText({''})
+        game_finished <<- F
         
     })
-    
-#     observe({
-#         if(length(input$numbers) == 1){
-#             idx <<- c(as.numeric(input$numbers[1]))
-#             num1 <<- nums[idx[1]]
-#             show[idx[1]] <<- T
-#             names(lst)[idx[1]] <<- as.character(num1)
-#         } else if(length(input$numbers) == 2){
-#             for(sel in input$numbers){
-#                 if (!(as.numeric(sel) %in% idx)) {
-#                     idx <<- c(idx, as.numeric(sel))
-#                 }
-#             }
-#             num2 <<- nums[idx[2]]
-#             show[idx[2]] <<- T
-#             names(lst)[idx[2]] <<- as.character(num2)
-#             if (num1 == num2) {
-#                 guessed[idx[1]] <<- guessed[idx[2]] <<- T
-#             }
-#         } else if(length(input$numbers) == 3){
-#             for(sel in input$numbers){
-#                 if (!(as.numeric(sel) %in% idx)) {
-#                     idx <<- c(as.numeric(sel))
-#                     break
-#                 }
-#             }
-#             num1 <<- nums[idx[1]]
-#             num2 <<- -1
-#             show <<- guessed
-#             show[idx[1]] <<- T
-#             for(i in c(1:n)){
-#                 if(!show[i]){
-#                     names(lst)[i] <<- 'X'
-#                 }
-#             }
-#         } else if(length(input$numbers) == 0){
-#             
-#             for(i in c(1:n)){
-#                 if(!guessed[i]){
-#                     names(lst)[i] <<- 'X'
-#                 }
-#             }
-#             idx <<- NULL
-#             num1 <<- num2 <<- -1
-#         }
-#         isolate({
-#             updateCheckboxGroupInput(session, 'numbers', 
-#                                      choices = lst, 
-#                                      selected=as.character(idx)
-#             )
-#         })
-#         if(!(F %in% guessed)){
-#             output$msg <- renderText({'Good job! Once more?'})
-#         }
-#     })
 })
 
