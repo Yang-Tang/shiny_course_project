@@ -1,13 +1,29 @@
 library(shiny)
 n <- 6
-# nums <- sample(rep(c(1:(n/2)), times=2), n, F)
+nums <- sample(rep(c(1:(n/2)), times=2), n, F)
 guessed <- show <- rep(F, times=n)
-# lst <- as.list(c(1:n))
-# names(lst) <- rep('X', times=n)
-#num1 <- num2 <- -1
-#idx <- 1
+lst <- as.list(c(1:n))
+names(lst) <- rep('X', times=n)
+num1 <- num2 <- -1
+idx <- 1
+exposed <- c(F,F,F,F,F,T)
 
 shinyServer(function(input, output, session){
+    output$numbers <- renderUI({
+#         input$init
+#         input$dif
+        for(i in c(1:n)){
+            if(i %in% as.numeric(input$numbers2)){
+                names(lst)[i] <<- as.character(nums[i])
+            } else {
+                names(lst)[i] <<- 'X'
+            }
+        }
+        checkboxGroupInput('numbers2',
+                           label = 'num2',
+                           choices = lst,
+                           selected = input$numbers2)
+    })
     observe({
         input$init
         n <<- 2* as.numeric(input$dif)
@@ -55,7 +71,7 @@ shinyServer(function(input, output, session){
                 }
             }
         } else if(length(input$numbers) == 0){
-
+            
             for(i in c(1:n)){
                 if(!guessed[i]){
                     names(lst)[i] <<- 'X'
