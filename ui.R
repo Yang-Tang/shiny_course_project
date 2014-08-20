@@ -1,4 +1,4 @@
-
+library(shiny)
 
 shinyUI(fluidPage(
     titlePanel('The Shiny Memory Match Game'),
@@ -28,7 +28,7 @@ shinyUI(fluidPage(
                 actionButton("init", "Restart!"),
                 br(),
                 br(),
-                em('Please note that, for some unkown reason, there are some lags when this app runs on the ShinyApps.io server. While the widget reacting to your click, please be patient .')
+                em('Please note that, for some unknown reason, there are some lags when this app runs on the ShinyApps.io server. While the widget reacting to your click, please be patient .')
             ),
             conditionalPanel(
                 'input.tab === "Table"',
