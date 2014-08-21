@@ -3,7 +3,7 @@ The Shiny Memory Match Game
 author: Yang
 date: 2014-08-21
 
-Intruduction
+Introduction
 ========================================================
 
 Picture matching game is a very famous memory challenge game that player click on the different cards to find pairs of matching pictures. 
